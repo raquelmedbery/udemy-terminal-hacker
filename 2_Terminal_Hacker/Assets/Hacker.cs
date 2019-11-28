@@ -1,9 +1,22 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hacker : MonoBehaviour
+public class Hacker : MonoBehaviour   
 {
+    //Game data configuration
+    string[] levelOnePasswords = { "cat", "joy", "dog", "bed", "pink" };
+    string[] levelTwoPasswords = { "education", "class", "sports", "grade", "lunch" };
+
+    //This is the game state
+    int level;
+    enum Screen {MainMenu, Password, WinMenu};
+    Screen currentScreen;
+    //const string EASYPASS = "cat";
+    //const string HARDPASS = "class";
+    string password;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -12,6 +25,7 @@ public class Hacker : MonoBehaviour
 
     void ShowMainMenu()
     {
+        currentScreen = Screen.MainMenu;
         Terminal.ClearScreen();
         Terminal.WriteLine("What's up user!");
         Terminal.WriteLine("Feel like committing a crime today?");
@@ -31,24 +45,30 @@ public class Hacker : MonoBehaviour
         {
             ShowMainMenu();
         }
-        else if(input == "1")
+        else if(currentScreen == Screen.MainMenu)
         {
-            Terminal.WriteLine("You chose friend's laptop!");
+            RunMainMenu(input);
         }
-        else if (input == "2")
+        else if(currentScreen == Screen.Password)
         {
-            Terminal.WriteLine("You chose school records");
+            CheckPassword(input);
         }
-        else if (input == "3")
+    }
+
+    void RunMainMenu(string input)
+    {
+        bool isValidLevelNumber = (input == "1" || input == "2" || input == "3");
+        if (isValidLevelNumber)
         {
-            Terminal.WriteLine("You chose FBI agent!");
+            level = int.Parse(input);
+            StartGame();
         }
-        else if (input == "69")
+        else if (input == "69")  //easter egg
         {
             Terminal.WriteLine("Not enough money for chicken nuggets");
             Terminal.WriteLine("Choose again");
         }
-        else if (input == "Kingdom Hearts")
+        else if (input == "Kingdom Hearts")  //easter egg
         {
             Terminal.WriteLine("Fun game. Not the one we're playing" + "\n" + "though");
             Terminal.WriteLine("Choose again");
@@ -59,4 +79,70 @@ public class Hacker : MonoBehaviour
             Terminal.WriteLine("Choose again");
         }
     }
+
+    void StartGame()
+    {
+        currentScreen = Screen.Password;
+        Terminal.ClearScreen();
+        switch (level)
+        {
+            case 1:
+                password = levelOnePasswords[Random.Range(0, levelOnePasswords.Length)];
+                break;
+            case 2:
+                password = levelTwoPasswords[Random.Range(0, levelTwoPasswords.Length)];
+                break;
+            default:
+                Debug.LogError("Invalid Level Number");
+                break;
+        }
+        Terminal.WriteLine("Please enter the password:");
+    }
+
+    void CheckPassword(string input)
+    {
+        if(input == password)
+        {
+            DisplayWinScreen();
+        }
+        else
+        {
+            Terminal.WriteLine("WRONG! Please try again.");
+        }
+    }
+
+    void DisplayWinScreen()
+    {
+        currentScreen = Screen.WinMenu;
+        Terminal.ClearScreen();
+        ShowLevelReward();
+    }
+
+    void ShowLevelReward()
+    {
+        switch (level)
+        {
+            case 1:
+                Terminal.WriteLine("Going snooping are you?");
+                Terminal.WriteLine(@"
+Draw eyes here later
+
+"
+                );
+                break;
+        }
+    }
+
+    void CheckHardPassword(string input)
+    {
+        if (input == password)
+        {
+            Terminal.WriteLine("You got it right!");
+        }
+        else
+        {
+            Terminal.WriteLine("WRONG! Please try again.");
+        }
+    }
+
 }
